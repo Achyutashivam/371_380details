@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
+from selenium.common.exceptions import TimeoutException, WebDriverException
 import time
 import json
 import re
@@ -68,6 +69,9 @@ def create_driver():
     options.binary_location = "/usr/bin/chromium"
 
     service = Service(ChromeDriverManager().install())
+    options.binary_location = "/usr/bin/chromium"
+    service = Service(ChromeDriverManager().install())
+
 
     return webdriver.Chrome(
         service=service,
@@ -2775,12 +2779,17 @@ def scrape_faqs_section(driver):
     
     return result
 # ---------------- FEES ----------------
+
 def scrape_fees(driver, URLS):
     try:
         driver.get(URLS["fees"])
-    except selenium.common.exceptions.InvalidSessionIdException:
-        driver = webdriver.Chrome(options=options)
+    except (TimeoutException, WebDriverException):
+        print("Driver crashed. Restarting...")
+        driver.quit()
+        driver = create_driver()
         driver.get(URLS["fees"])
+
+    return driver
     
     wait = WebDriverWait(driver, 20)
     
