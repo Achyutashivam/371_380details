@@ -2789,8 +2789,6 @@ def scrape_fees(driver, URLS):
         driver = create_driver()
         driver.get(URLS["fees"])
 
-    return driver
-    
     wait = WebDriverWait(driver, 20)
     
     college_info = {
